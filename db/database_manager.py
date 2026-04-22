@@ -88,7 +88,7 @@ class DatabaseManager:
             VALUES (%s, %s, %s)
             RETURNING file_id
             """,
-            (user_id, file_type, "pending"),
+            (user_id, file_type, "PENDING"),
         )
         row = cursor.fetchone()
         return row[0]
@@ -157,6 +157,9 @@ class DatabaseManager:
 
             #step_2: open a postgres transaction.
             #autocommit_is off by default in psycopg2 — this gives us BEGIN implicitly.
+            #first_rollback any dangling transactions (e.g. from previous GET /files)
+            if pg_conn.status != psycopg2.extensions.STATUS_READY:
+                pg_conn.rollback()
             pg_conn.autocommit = False
 
             with pg_conn.cursor() as cur:

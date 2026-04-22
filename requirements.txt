@@ -1,0 +1,14 @@
+# LumenAid — Python dependencies
+# Install with: pip install -r requirements.txt
+
+# --- API layer ---
+fastapi==0.111.0
+uvicorn[standard]==0.29.0
+python-multipart==0.0.9      # required for FastAPI file uploads
+
+# --- Database layer ---
+psycopg2-binary==2.9.9       # PostgreSQL driver
+pymongo==4.7.1                # MongoDB driver
+
+# --- Engine layer (already in engine/) ---
+# No extra dependencies — uses stdlib only (math, os)

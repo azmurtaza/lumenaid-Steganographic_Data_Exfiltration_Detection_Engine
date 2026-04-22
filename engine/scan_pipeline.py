@@ -135,7 +135,17 @@ class ScanPipeline:
 
         #derive_file_type from extension (lowercase, no dot)
         _, ext = os.path.splitext(file_path)
-        file_type = ext.lstrip(".").lower() or "unknown"
+        ext_upper = ext.lstrip(".").upper()
+        
+        type_mapping = {
+            "TXT": "TEXT",
+            "CSV": "TEXT",
+            "LOG": "TEXT",
+            "JPEG": "JPG",
+        }
+        mapped_type = type_mapping.get(ext_upper, ext_upper)
+        supported_types = {"TEXT", "PDF", "JPG", "PNG", "DOCX", "XLSX", "ZIP", "MP3", "EXE", "BIN"}
+        file_type = mapped_type if mapped_type in supported_types else "BIN"
 
         try:
             #--- step 1: entropy analysis via lumenengine ---
@@ -182,7 +192,7 @@ class ScanPipeline:
                 self._write_alerts(pg_conn, file_id, alerts_raised)
 
             #--- step 5: update file status ---
-            final_status = "flagged" if alerts_raised else "clean"
+            final_status = "FLAGGED" if alerts_raised else "CLEAN"
             self._update_file_status(pg_conn, file_id, final_status)
 
             return ScanResult(
